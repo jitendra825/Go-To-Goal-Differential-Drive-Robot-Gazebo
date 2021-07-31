@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot>
+    <macro name="link_wheel" params="name">
+        <link name = "${name}">
+            <inertial>
+                <mass value="0.5"/>
+                <origin rpy = "0 0 0" xyz = "0 0 0"/>
+                <inertia ixx = "0.00131667" ixy="0" ixz="0" iyy="0.0025" iyz="0" izz="0.00131667"/>
+            </inertial>
+    
+            <collision name="${name}_collision">
+                <origin rpy = "0 1.5707 1.5707" xyz = "0 0 0"/>
+                <geometry>
+                    <cylinder length="0.04" radius="0.1"/>
+                </geometry>
+            </collision>
+            <visual name="${name}_visual">
+                <origin rpy = "0 1.5707 1.5707" xyz = "0 0 0"/>
+                <geometry>
+                    <cylinder length="0.04" radius="0.1"/>
+                </geometry>
+                <meterial name="blue"/>
+            </visual>
+            <surface>
+                <friction>
+                    <ode>
+                        <mu1>1.2</mu1>
+                        <mu2>1.2</mu2>
+                        <kp>1e15</kp>
+                        <kd>1e13</kd>
+                    </ode>
+                </friction>
+                <bounce>
+                    <restitution_coefficient>0.01</restitution_coefficient>
+                    <threshold>0</threshold>
+                </bounce>
+                <contact>
+                    <ode>
+                        <max_vel>10</max_vel>
+                    </ode>
+                </contact>
+            </surface>
+        </link>
+    </macro>
+
+    <macro name="link_joint" params="name child origin_xyz">
+        <joint name="${name}" type="continuous">
+            <origin rpy="0 0 0" xyz="${origin_xyz}"/>
+            <child link="${child}"/>
+            <parent link="link_chassis"/>
+            <axis rpy="0 0 0" xyz="0 1 0"/>
+            <limit effort="10000" velocity="1000"/>
+            <joint_properties damping="0.01" friction="0.001"/>
+        </joint>
+    </macro>
+
+    <macro name="transmission_tag" params="name joint_name">
+        <transmission name="${name}">
+            <type>transmission_interface/SimpleTransmission</type>
+            <joint name="${joint_name}">
+                <hardwareInterface>EffortJointInterface</hardwareInterface>
+            </joint>
+            <actuator name="${name}_motor">
+                <hardwareInterface>EffortJointInterface</hardwareInterface>
+                <mechanicalReduction>1</mechanicalReduction>
+            </actuator>
+        </transmission> 
+
+    </macro>
+
+    <macro name="cylinder_inertia" params="mass r l">
+        <inertia ixx="${mass*(3*r*r+l*l)/12}" ixy="0" ixz="0"
+                 iyy="${mass*(3*r*r+l*l)/12}" iyz="0"
+                 izz="${mass*(r*r)/2}"/>
+    </macro>
+    
+</robot>

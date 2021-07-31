@@ -1,0 +1,15 @@
+ddr_control:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 100  
+
+  # Position Controllers ---------------------------------------
+  rightWheel_controller:
+    type: effort_controllers/JointEffortController
+    joint: joint_right_wheel
+    pid: {p: 1.0, i: 0.01, d: 0.01}
+  leftWheel_controller:
+    type: effort_controllers/JointEffortController
+    joint: joint_left_wheel
+    pid: {p: 1.0, i: 0.01, d: 0.01}

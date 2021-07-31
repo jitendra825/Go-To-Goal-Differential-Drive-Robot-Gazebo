@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name ="m2wr" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:include filename="$(find ddr_robot)/urdf/materials.xacro"/>
+    <xacro:include filename="$(find ddr_robot)/urdf/m2wr.gazebo"/>
+    <xacro:include filename="$(find ddr_robot)/urdf/macros.xacro"/> 
+    <!-- robot_chassis -->
+    <link name="link_chassis">
+        <pose>0 0 0 0 0 0</pose>
+        <inertial>
+            <mass value="1"/>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+            <inertia ixx = "0.007908" ixy="0" ixz="0" iyy="0.02124" iyz="0" izz="0.02124"/>
+        </inertial>
+
+        <collision name="collision_chassis">
+            <geometry>
+                <box size="0.5 0.3 0.07"/>
+            </geometry>
+        </collision>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <box size="0.5 0.3 0.07"/>
+            </geometry>
+            <material name="">
+                <color rgba="0 1 0.1 1" />
+            </material>      
+        </visual>
+        <!-- caster_wheel front-->
+        <collision name="caster_front_collision">
+            <origin rpy="0 0 0" xyz="0.2 0 -0.0675"/>
+            <geometry>
+                <sphere radius="0.0325"/>
+            </geometry>
+            <surface>
+                <friction>
+                    <ode>
+                        <mu>0</mu>
+                        <mu2>0</mu2>
+                        <slip1>1.0</slip1>
+                        <slip2>1.0</slip2>
+                    </ode>
+                </friction>
+            </surface>
+        </collision>
+        <visual name="caster_front_visual">
+            <origin rpy="0 0 0" xyz="0.2 0 -0.0675"/>
+            <geometry>
+                <sphere radius="0.0325"/>
+            </geometry>
+        </visual>
+         <!-- caster_wheel rare -->
+        <collision name="caster_front_collision">
+            <origin rpy="0 0 0" xyz="-0.2 0 -0.0675"/>
+            <geometry>
+                <sphere radius="0.0325"/>
+            </geometry>
+            <surface>
+                <friction>
+                    <ode>
+                        <mu>0</mu>
+                        <mu2>0</mu2>
+                        <slip1>1.0</slip1>
+                        <slip2>1.0</slip2>
+                    </ode>
+                </friction>
+            </surface>
+        </collision>
+        <visual name="caster_front_visual">
+            <origin rpy="0 0 0" xyz="-0.2 0 -0.0675"/>
+            <geometry>
+                <sphere radius="0.0325"/>
+            </geometry>
+        </visual>
+    </link>
+    
+    <!-- Laser_Sensor -->
+    <link name="sensor_laser">
+        
+        <inertial>
+            <mass value="0.1"/>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+            <xacro:cylinder_inertia mass="0.1" r="0.05" l="0.1"/>
+        </inertial>
+
+        <collision name="collision_chassis">
+            <geometry>
+                <cylinder radius="0.05" length="0.1"/>
+            </geometry>
+        </collision>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <cylinder radius="0.05" length="0.1"/>
+            </geometry>
+            <material name="">
+                <color rgba="0 0.1 1 1" />
+            </material>
+        </visual>
+    </link>
+    <!-- Laser_Sensor_joint -->
+    <joint name="joint_sensor_laser" type="fixed">
+        <origin xyz="0.15 0.0 0.05" rpy="0.0 0.0 0.0"/>
+        <parent link="link_chassis"/>
+        <child link="sensor_laser"/>
+    </joint>
+
+    <!-- Wheel -->
+    <xacro:link_wheel name="link_right_wheel" />
+    <xacro:link_wheel name="link_left_wheel" />
+    <!-- Wheel_joints -->
+    <xacro:link_joint name="joint_right_wheel" child="link_right_wheel" origin_xyz="0 0.18 0" />
+    <xacro:link_joint name="joint_left_wheel" child="link_left_wheel" origin_xyz="0 -0.18 0" />
+    
+    <!-- Transmission -->
+    <xacro:transmission_tag name="right" joint_name="joint_right_wheel" />
+    <xacro:transmission_tag name="left" joint_name="joint_left_wheel" />
+
+    <!--Camera box -->
+    <link name="link_camera">
+        <pose>0 0 0 0 0 0</pose>
+        <inertial>
+            <mass value="0.01"/>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+            <inertia ixx = "0.000008166" ixy="0" ixz="0" iyy="0.000008166" iyz="0" izz="0.000008166"/>
+        </inertial>
+
+        <collision name="collision_camera">
+            <geometry>
+                <box size="0.035 0.07 0.07"/>
+            </geometry>
+        </collision>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <box size="0.035 0.07 0.07"/>
+            </geometry>
+            <material name="">
+                <color rgba="1 1 1 1" />
+            </material>
+            
+        </visual>
+    </link>
+
+    <!-- camera_joint -->
+    <joint name="joint_camera" type="fixed">
+        <origin rpy="0 0 0" xyz="0.2675 0 0"/>
+        <child link="link_camera"/>
+        <parent link="link_chassis"/>
+    </joint>
+
+    <!--IMU Sensor box -->
+    <link name="link_IMU">
+        <pose>0 0 0 0 0 0</pose>
+        <inertial>
+            <mass value="0.01"/>
+            <origin rpy = "0 0 0" xyz = "0 0 0"/>
+            <inertia ixx = "0.00000083" ixy="0" ixz="0" iyy="0.000000416" iyz="0" izz="0.00000108"/>
+        </inertial>
+
+        <collision name="collision_imu">
+            <geometry>
+                <box size="0.02 0.02 0.01"/>
+            </geometry>
+        </collision>
+        <visual>
+            <origin rpy="0 0 0" xyz="0 0 0"/>
+            <geometry>
+                <box size="0.02 0.02 0.01"/>
+            </geometry>
+            <material name="">
+                <color rgba="1 1 1 1" />
+            </material>
+            
+        </visual>
+    </link>
+
+    <!-- IMU Sensor_joint -->
+    <joint name="joint_IMU" type="fixed">
+        <origin rpy="0 0 0" xyz="0 0 0.04"/>
+        <parent link="link_chassis"/>
+        <child link="link_IMU"/> 
+    </joint>
+           
+    
+</robot>

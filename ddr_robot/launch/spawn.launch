@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<launch>
+    <param name="robot_description" command="$(find xacro)/xacro '$(find ddr_robot)/urdf/m2wr.xacro'"/>
+    <!-- overwriting these args -->
+    <arg name="debug" default="false" />
+    <arg name="gui" default="true" />
+    <arg name="pause" default="true" />
+
+    <arg name="x" default="0"/>
+    <arg name="y" default="0"/>
+    <arg name="z" default="0.105"/>
+  
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="debug" value="$(arg debug)" />
+        <arg name="gui" value="$(arg gui)" />
+        <arg name="paused" value="$(arg pause)" />
+        <arg name="use_sim_time" value="true" />
+    </include>
+    
+    <!-- Load joint controller configurations from YAML file to parameter server -->
+    <rosparam file="$(find ddr_robot)/config/ddr_control.yaml" command="load"/>
+
+    <!-- load the controllers -->
+    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+          output="screen" ns="/ddr_control" args="rightWheel_controller leftWheel_controller joint_state_controller"/>
+    
+    <node name="m2wr_spawn" pkg="gazebo_ros" type="spawn_model"  output="screen" 
+          args="-param robot_description -urdf -model m2wr -x $(arg x) -y $(arg y) -z $(arg z)"/>
+        
+ 
+
+</launch>
